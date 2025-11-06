@@ -1,0 +1,36 @@
+TLS Handshake Explanation
+The TLS handshake is a four-phase negotiation process that securely establishes an encrypted session between a client (e.g., your browser) and a server (e.g., a website).
+
+1. Hello Exchange: The client sends a Client Hello proposing supported TLS versions (e.g., TLS 1.3), cipher suites (e.g., AES-256), and a random number (Client Random). The server replies with a Server Hello, choosing the best options and providing its own Server Random.
+
+2. Certificate Exchange: The server sends its Digital Certificate (which contains its Public Key). This authenticates the server's identity to the client.
+
+3. Key Exchange: Using algorithms like ECDHE (Ephemeral Diffie-Hellman) and the Public Key from the certificate, the client and server agree upon a unique, shared Session Key without ever transmitting the key itself across the network.
+
+4. Finished: Both parties send an encrypted Finished message using the new Session Key. Successful decryption confirms that the handshake was not tampered with and the session key is valid. Encryption then begins immediately afterward.
+
+🛡️ MITM Protection Mechanisms
+TLS primarily protects against Man-in-the-Middle (MITM) attacks—where an attacker attempts to intercept and impersonate the server—through two core cryptographic mechanisms:
+
+Digital Certificates and CAs (Authentication):
+
+The server's certificate is cryptographically signed by a trusted Certificate Authority (CA).
+
+The client validates this signature, confirming that the Public Key belongs to the legitimate server and that the certificate hasn't been forged.
+
+An attacker cannot produce a certificate that validates to a known root CA, so the client terminates the connection upon receiving a fraudulent certificate.
+
+Ephemeral Key Exchange (Perfect Forward Secrecy - PFS):
+
+Modern TLS (1.2 and 1.3) uses algorithms (like ECDHE) to generate a unique, temporary Session Key for every connection.
+
+This ensures that the compromise of the server's long-term Private Key does not allow an attacker to decrypt previously recorded sessions. Because the session key is ephemeral ("short-lived"), it provides Perfect Forward Secrecy, securing past communications.
+
+🌐 TLS Application in Websites (HTTPS)
+TLS is the security layer for the HTTP protocol, creating HTTPS. It secures online communications by providing three fundamental security properties:
+
+Confidentiality (Encryption): All data exchanged—including passwords, form data, and proprietary content—is scrambled using the negotiated Cipher Suite (e.g., AES-256). This makes the traffic unreadable to any eavesdropper or network sniffer.
+
+Integrity (Tamper Protection): Cryptographic hash functions (like SHA-256) are used to create Message Authentication Codes (MACs) for every packet. If an attacker modifies even a single bit of data in transit, the recipient detects the hash mismatch and rejects the packet, guaranteeing that the data is received exactly as it was sent.
+
+Authentication (Identity Verification): The server's Digital Certificate assures the client that they are connected to the correct, intended website, preventing adversaries from setting up fake sites to trick users (phishing).
